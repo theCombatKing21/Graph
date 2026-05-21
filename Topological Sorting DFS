@@ -1,0 +1,35 @@
+    static void topologicalSort(ArrayList<ArrayList<Integer>> adj, int V) 
+    { 
+        boolean[] visited=new boolean[V]; 
+
+//create an empty stack
+    	Stack<Integer> st = new Stack<Integer>(); 
+        //traverse through all the descendents and diff components
+        for(int u=0;u<V;u++){
+            if(visited[u]==false){
+                DFS(adj,u,st,visited);
+            }
+        }
+        
+        while (st.empty() == false) 
+            System.out.print(st.pop() + " "); 
+       
+   
+static void DFS(ArrayList<ArrayList<Integer>> adj, int u,Stack<Integer> st, boolean visited[]) 
+    { 	
+
+
+        visited[u]=true;
+
+//go till the very end and when there are no descendents comeout and push it to the stack and return back to the caller
+        for(int v:adj.get(u)){
+            if(visited[v]==false)
+                DFS(adj,v,st,visited);
+        }
+        st.push(new Integer(u));
+    }
+    
+    
+  
+       
+  

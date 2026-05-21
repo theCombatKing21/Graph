@@ -1,0 +1,74 @@
+class Solution {
+    public int findCircleNum(int[][] isConnected) {
+
+        int n = isConnected.length; // n = number of cities (matrix is always n x n)
+        boolean[] visited = new boolean[n]; // one slot per city, not per cell
+        int provinces = 0;
+
+        // Outer loop visits each CITY, not each matrix cell
+        // Cities are just 0, 1, 2 ... n-1 (simple 1D list of nodes)
+        for (int i = 0; i < n; i++) {
+
+            if (!visited[i]) {          // Found a city we haven't explored yet
+                provinces++;            // This city starts a new province
+                visited[i] = true;
+
+                Queue<Integer> queue = new LinkedList<>();
+                queue.offer(i);         // Add city number (just an int, not coordinates)
+
+                // BFS - explore all cities connected to city i
+                while (!queue.isEmpty()) {
+
+                    int city = queue.poll(); // Take out a city from the front
+
+                    // Scan the ENTIRE ROW of this city in the matrix
+                    // Each column j in this row tells us:
+                    // "is city j a friend of current city?"
+                    for (int j = 0; j < n; j++) {
+
+                        // isConnected[city][j] == 1 means city and j are connected
+                        // !visited[j] means we haven't explored city j yet
+                        if (isConnected[city][j] == 1 && !visited[j]) {
+                            visited[j] = true;
+                            queue.offer(j); // Add neighbor city to queue (just a number)
+                        }
+                    }
+                }
+                // When queue is empty, entire province is explored
+                // Go back to outer loop to find next unvisited city
+            }
+        }
+
+        return provinces;
+    }
+}
+
+Trace Through the Example
+isConnected = [
+  [1, 1, 0],   ← City 0's row
+  [1, 1, 0],   ← City 1's row
+  [0, 0, 1]    ← City 2's row
+]
+i=0 → not visited → provinces=1 → queue=[0]
+    poll 0 → scan row 0 → [1,1,0]
+        j=0 → isConnected[0][0]=1 but visited, skip
+        j=1 → isConnected[0][1]=1 and not visited → mark, queue=[1]
+        j=2 → isConnected[0][2]=0, skip
+    poll 1 → scan row 1 → [1,1,0]
+        j=0 → visited, skip
+        j=1 → visited, skip
+        j=2 → isConnected[1][2]=0, skip
+    queue empty → province 1 fully explored
+
+i=1 → already visited, skip
+
+i=2 → not visited → provinces=2 → queue=[2]
+    poll 2 → scan row 2 → [0,0,1]
+        j=0 → 0, skip
+        j=1 → 0, skip
+        j=2 → visited, skip
+    queue empty → province 2 fully explored
+
+return 2 ✓
+The structure is identical to Number of Islands — the only difference is that cities are plain numbers 
+so the queue holds integers, and finding neighbors means scanning a row instead of checking physical directions.You said: Few cases failing for above code , one of them when

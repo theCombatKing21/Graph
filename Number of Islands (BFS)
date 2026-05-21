@@ -1,0 +1,59 @@
+1. Scan every cell in the grid row by row
+
+2. When you find an unvisited land cell ('1'):
+      → Count it as a new island
+      → Mark it visited immediately
+      → Add it to the queue
+
+3. Now run BFS from that cell:
+      WHILE queue is not empty:
+          → Take out a cell from the front
+          → Look at its 4 neighbors (up, down, left, right)
+          → For each neighbor:
+                if it is within bounds AND is land ('1'):
+                      → Mark it visited
+                      → Add it to the queue
+
+4. When queue becomes empty, the entire island is explored.
+   Go back to step 1 and keep scanning for the next unvisited land.
+
+public int numIslands(char[][] grid) {
+    int rows = grid.length;
+    int cols = grid[0].length;
+    int islandCount = 0;
+
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+
+            if (grid[r][c] == '1') {          // Found unvisited land
+                islandCount++;                 // New island discovered
+                grid[r][c] = '0';             // Mark visited immediately
+
+                Queue<int[]> queue = new LinkedList<>();
+                queue.offer(new int[]{r, c}); // Pack (r,c) and add to queue
+
+                while (!queue.isEmpty()) {
+                    int[] cell = queue.poll(); // Take out front cell
+                    int row = cell[0];         // Unpack row
+                    int col = cell[1];         // Unpack col
+
+                    // Check all 4 neighbors
+                    int[][] directions = {{1,0},{-1,0},{0,1},{0,-1}};
+                    for (int[] dir : directions) {
+                        int nr = row + dir[0]; // neighbor row
+                        int nc = col + dir[1]; // neighbor col
+
+                        // Valid cell? Is it land?
+                        if (nr >= 0 && nc >= 0 && nr < rows && nc < cols
+                                && grid[nr][nc] == '1') {
+                            grid[nr][nc] = '0';             // Mark visited
+                            queue.offer(new int[]{nr, nc}); // Add to queue
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+    return islandCount;
+}
